@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources | The Student Upgrade</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { font-family:'Inter',system-ui,sans-serif; background: linear-gradient(180deg, #f4f8ff 0%, #eaf1fd 100%); color:#1a2a4a; line-height:1.7; min-height:100vh; transition: background 0.4s, color 0.4s; }
+        .nav-container { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:center;padding:18px;transition:all 0.4s; }
+        .nav-container.scrolled { background:rgba(244,248,255,0.9);backdrop-filter:blur(20px);box-shadow:0 1px 20px rgba(0,0,0,0.04); }
+        nav { display:flex;gap:4px;align-items:center;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.04);border-radius:50px;padding:6px;backdrop-filter:blur(12px); }
+        nav a { color:#4a6a8a;text-decoration:none;font-weight:600;font-size:0.8rem;padding:8px 18px;border-radius:50px;transition:all 0.3s;white-space:nowrap; }
+        nav a:hover { color:#0a1a2e;background:rgba(0,0,0,0.03); } nav a.active { background:#0a1a2e;color:#fff; }
+        .theme-toggle { background:none;border:none;cursor:pointer;font-size:1.1rem;padding:6px;border-radius:50%;transition:all 0.3s;line-height:1;margin-left:2px; }
+        .theme-toggle:hover { background:rgba(0,0,0,0.05); }
+        .container { max-width:850px;margin:0 auto;padding:120px 24px 60px; }
+        .page-header { text-align:center;margin-bottom:40px; }
+        .page-badge { display:inline-flex;align-items:center;gap:6px;padding:6px 18px;border-radius:50px;background:rgba(30,64,175,0.08);border:1px solid rgba(30,64,175,0.15);font-size:0.75rem;color:#1e40af;font-weight:600;margin-bottom:16px; }
+        h1 { font-family:'Outfit',sans-serif;font-size:2.5rem;font-weight:800;color:#0a1a2e; } .page-subtitle { color:#4a6a8a;font-size:1rem; }
+        .card { background:#fff;border:1px solid rgba(0,0,0,0.04);border-radius:24px;padding:28px;margin-bottom:16px; }
+        .card h2 { font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:700;color:#0a1a2e;margin-bottom:16px; }
+        .resource-item { background:#f4f8ff;border-radius:14px;padding:16px;margin-bottom:10px;transition:all 0.3s; }
+        .resource-item:hover { background:#eaf1fd;transform:translateX(4px); }
+        .resource-item h3 { font-weight:700;color:#1e40af;margin-bottom:4px;font-size:0.95rem; }
+        .resource-item p { color:#4a6a8a;font-size:0.85rem; } .resource-item a { color:#1e40af;font-weight:600;text-decoration:none;font-size:0.85rem; }
+        footer { border-top:1px solid #d0ddf0;padding:32px 24px;text-align:center;background:#eaf1fd;color:#7a8aaa;font-size:0.8rem; }
+        footer a { color:#1e40af;text-decoration:none;font-weight:500; } footer .footer-links { display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:12px; }
+        body.dark { background:#0d1117 !important;color:#e6edf3 !important; }
+        body.dark .card { background:#161b22 !important;border-color:rgba(255,255,255,0.05) !important; }
+        body.dark h1,body.dark h2 { color:#e6edf3 !important; }
+        body.dark .resource-item { background:#161b22 !important; } body.dark .resource-item h3 { color:#58a6ff !important; }
+        body.dark .resource-item p { color:#8b949e !important; } body.dark .resource-item a { color:#58a6ff !important; }
+        body.dark nav { background:rgba(22,27,34,0.7) !important;border-color:rgba(255,255,255,0.06) !important; }
+        body.dark nav a { color:#8b949e !important; } body.dark nav a:hover { color:#e6edf3 !important; }
+        body.dark nav a.active { background:#58a6ff !important;color:#fff !important; }
+        body.dark footer { background:#0d1117 !important;border-top-color:rgba(255,255,255,0.05) !important;color:#8b949e !important; }
+        body.dark footer a { color:#58a6ff !important; } body.dark .theme-toggle:hover { background:rgba(255,255,255,0.08); }
+        @media (max-width:500px) { nav { gap:2px;padding:4px; } nav a { font-size:0.6rem;padding:5px 9px; } .container { padding:100px 14px 40px; } h1 { font-size:1.8rem; } .card { padding:18px; } }
+    </style>
+</head>
+<body>
+    <div class="nav-container" id="navbar">
+        <nav>
+            <a href="home.html">Home</a><a href="upgrade_log.html">Upgrade Log</a><a href="study_planner.html">Study Planner</a>
+            <a href="stories.html">Read & Upgrade</a><a href="library.html">Library</a><a href="resources.html" class="active">Resources</a>
+            <a href="book-summaries.html">Book Summaries</a><a href="contact.html">Contact</a>
+            <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button>
+        </nav>
+    </div>
+    <div class="container">
+        <div class="page-header"><div class="page-badge">🛠️ Free Tools</div><h1>Student Resources</h1><p class="page-subtitle">The best free tools and platforms — curated by a student, for students.</p></div>
+        <div class="card"><h2>📚 Study & Organization</h2>
+            <div class="resource-item"><h3>Notion</h3><p>All-in-one workspace for notes, tasks, and tracking. Free for students.</p><a href="https://notion.so" target="_blank">Visit →</a></div>
+            <div class="resource-item"><h3>Anki</h3><p>Flashcard app using spaced repetition. Free on desktop and Android.</p><a href="https://apps.ankiweb.net" target="_blank">Visit →</a></div>
+            <div class="resource-item"><h3>Google Calendar</h3><p>Time-block your study sessions. Syncs everywhere.</p><a href="https://calendar.google.com" target="_blank">Visit →</a></div>
+        </div>
+        <div class="card"><h2>🛠️ Building & Creating</h2>
+            <div class="resource-item"><h3>InfinityFree</h3><p>Free website hosting with no ads. This site runs on it.</p><a href="https://infinityfree.com" target="_blank">Visit →</a></div>
+            <div class="resource-item"><h3>Canva</h3><p>Design presentations and graphics. Free tier is powerful.</p><a href="https://canva.com" target="_blank">Visit →</a></div>
+            <div class="resource-item"><h3>GitHub</h3><p>Store code, collaborate, and build a portfolio.</p><a href="https://github.com" target="_blank">Visit →</a></div>
+        </div>
+        <div class="card"><h2>🌐 Learning Platforms</h2>
+            <div class="resource-item"><h3>Khan Academy</h3><p>Free courses in math, science, and more.</p><a href="https://khanacademy.org" target="_blank">Visit →</a></div>
+            <div class="resource-item"><h3>freeCodeCamp</h3><p>Learn to code for free. Earn certifications.</p><a href="https://freecodecamp.org" target="_blank">Visit →</a></div>
+        </div>
+        <div class="card"><h2>🧠 Self-Improvement</h2>
+            <div class="resource-item"><h3>Atomic Habits by James Clear</h3><p>The book that started this project.</p><a href="https://jamesclear.com/atomic-habits" target="_blank">Visit →</a></div>
+            <div class="resource-item"><h3>The Student Upgrade</h3><p>You're already here. Track habits, plan studies, read stories.</p><a href="upgrade_log.html">Explore →</a></div>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-links">
+            <a href="home.html">Home</a><a href="upgrade_log.html">Upgrade Log</a><a href="study_planner.html">Study Planner</a>
+            <a href="stories.html">Read & Upgrade</a><a href="library.html">Library</a><a href="resources.html">Resources</a>
+            <a href="book-summaries.html">Book Summaries</a><a href="contact.html">Contact</a>
+        </div>
+        <p>&copy; 2026 The Student Upgrade. Built by Rebira, a Grade 11 student, for students everywhere.</p>
+        <p style="margin-top:6px;font-size:0.75rem;">📧 Rebbirragize@gmail.com | Made with ☕ and belief that small actions compound.</p>
+    </footer>
+    <script>
+        window.addEventListener("scroll",function(){document.getElementById("navbar").classList.toggle("scrolled",window.scrollY>50);});
+        (function(){var t=document.getElementById('themeToggle'),b=document.body;if(localStorage.getItem('theme')==='dark'){b.classList.add('dark');t.textContent='☀️';}t.addEventListener('click',function(){b.classList.toggle('dark');if(b.classList.contains('dark')){localStorage.setItem('theme','dark');t.textContent='☀️';}else{localStorage.setItem('theme','light');t.textContent='🌙';}});})();
+    </script>
+</body>
+</html>
