@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Student Upgrade</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            color: #1a1a2e; line-height: 1.7;
+            overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        }
+        .particles-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .particle {
+            position: absolute; border-radius: 50%;
+            animation: floatUp linear infinite; opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+        .login-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(15,12,41,0.92); backdrop-filter: blur(16px);
+            padding: 20px;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-card {
+            background: #fff; border-radius: 28px; padding: 40px 32px;
+            max-width: 420px; width: 100%; text-align: center;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+            animation: cardEntry 0.7s cubic-bezier(0.16,1,0.3,1);
+            position: relative; overflow: hidden;
+        }
+        .login-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 60%);
+            animation: loginGlow 8s ease-in-out infinite;
+        }
+        @keyframes loginGlow { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,-20px)} }
+        @keyframes cardEntry { from{opacity:0;transform:translateY(40px) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+        .login-card h2 {
+            font-family: 'Outfit', sans-serif; font-size: 1.8rem;
+            font-weight: 800; color: #1a1a2e; margin-bottom: 6px; position: relative; z-index: 1;
+        }
+        .login-card .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 24px; position: relative; z-index: 1; }
+        .login-card input {
+            width: 100%; padding: 14px; margin-bottom: 10px;
+            background: #f8f8fa; border: 2px solid #eee;
+            color: #1a1a2e; border-radius: 14px; font-size: 0.95rem;
+            font-family: inherit; transition: all 0.3s; position: relative; z-index: 1;
+        }
+        .login-card input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 4px rgba(99,102,241,0.08); }
+        .login-card .btn {
+            width: 100%; padding: 14px; font-weight: 700; font-size: 1rem;
+            border-radius: 50px; cursor: pointer; transition: all 0.3s; border: none;
+            font-family: inherit; margin-top: 6px; position: relative; z-index: 1; overflow: hidden;
+        }
+        .btn-primary { background: #6366f1; color: #fff; box-shadow: 0 8px 30px rgba(99,102,241,0.3); }
+        .btn-primary:hover { background: #4f46e5; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,0.45); }
+        .btn-primary:active { transform: scale(0.97); }
+        .login-card .switch { font-size: 0.85rem; color: #888; margin-top: 14px; position: relative; z-index: 1; }
+        .login-card .switch a { color: #6366f1; font-weight: 600; text-decoration: none; cursor: pointer; }
+        .login-card .skip { font-size: 0.8rem; color: #aaa; margin-top: 10px; cursor: pointer; text-decoration: underline; position: relative; z-index: 1; }
+        .login-card .message { font-size: 0.85rem; margin-top: 8px; position: relative; z-index: 1; }
+        .nav-container {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; justify-content: center; padding: 18px;
+            transition: all 0.4s;
+        }
+        .nav-container.scrolled {
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(20px);
+            box-shadow: 0 1px 30px rgba(0,0,0,0.08);
+        }
+        nav {
+            display: flex; gap: 4px; align-items: center;
+            background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 50px; padding: 6px; backdrop-filter: blur(12px);
+        }
+        nav a {
+            color: #555; text-decoration: none; font-weight: 600;
+            font-size: 0.8rem; padding: 8px 18px; border-radius: 50px;
+            transition: all 0.3s; white-space: nowrap;
+        }
+        nav a:hover { color: #1a1a2e; background: rgba(0,0,0,0.04); }
+        nav a.active { background: #1a1a2e; color: #fff; }
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 140px 40px 100px; text-align: center;
+            background: linear-gradient(160deg, #0f0c29 0%, #1a1a4e 30%, #24243e 60%, #1a1a2e 100%);
+            position: relative; overflow: hidden;
+        }
+        .hero-bg-layer {
+            position: absolute; inset: -20%;
+            background: 
+                radial-gradient(ellipse at 25% 20%, rgba(120,130,255,0.35) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 55%, rgba(255,150,100,0.25) 0%, transparent 55%),
+                radial-gradient(ellipse at 45% 75%, rgba(100,200,255,0.25) 0%, transparent 55%);
+            will-change: transform;
+        }
+        .hero-floating-shapes { position: absolute; inset: 0; pointer-events: none; }
+        .hero-shape {
+            position: absolute; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            animation: heroFloat 20s ease-in-out infinite;
+        }
+        .hero-shape:nth-child(1){ width:300px; height:300px; top:10%; left:5%; animation-delay:0s; }
+        .hero-shape:nth-child(2){ width:200px; height:200px; top:60%; right:8%; animation-delay:-5s; animation-duration:25s; }
+        .hero-shape:nth-child(3){ width:150px; height:150px; bottom:15%; left:20%; animation-delay:-10s; animation-duration:18s; }
+        @keyframes heroFloat {
+            0%,100%{transform:translate(0,0) scale(1)}
+            25%{transform:translate(40px,-30px) scale(1.15)}
+            50%{transform:translate(-25px,20px) scale(0.9)}
+            75%{transform:translate(-35px,-15px) scale(1.1)}
+        }
+        .hero-inner { position: relative; z-index: 2; max-width: 850px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 22px; border-radius: 50px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.8rem; color: #c8d6ff; font-weight: 500; margin-bottom: 28px;
+            animation: fadeUp 1s ease-out both;
+            backdrop-filter: blur(8px);
+        }
+        .hero-badge .pulse-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #34d399; animation: pulseDot 2s infinite;
+        }
+        @keyframes pulseDot { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,211,153,0.4)} 50%{opacity:0.5;box-shadow:0 0 0 12px rgba(52,211,153,0)} }
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 800; line-height: 1.05;
+            color: #fff; animation: fadeUp 1s ease-out 0.15s both;
+        }
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, #a78bfa 0%, #60a5fa 40%, #34d399 80%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 6s ease infinite;
+        }
+        @keyframes gradientShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+        .hero p {
+            font-size: 1.15rem; color: #a5b4fc; max-width: 500px;
+            margin: 20px auto 36px; animation: fadeUp 1s ease-out 0.3s both;
+        }
+        .btn-group { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; animation: fadeUp 1s ease-out 0.45s both; }
+        .btn {
+            padding: 15px 34px; font-weight: 600; font-size: 0.95rem;
+            border-radius: 50px; text-decoration: none; transition: all 0.4s;
+            display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none;
+            position: relative; overflow: hidden;
+        }
+        .btn-light { background: #fff; color: #1a1a2e; }
+        .btn-light:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255,255,255,0.35); }
+        .btn-outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.3); }
+        .btn-outline:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.5); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        section { padding: 100px 40px; position: relative; overflow: hidden; }
+        .section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 4px; font-weight: 700; margin-bottom: 16px; }
+        h2 { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 18px; }
+        .section-desc { font-size: 1.05rem; max-width: 550px; }
+        .section-divider { max-width: 1200px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 2; }
+        .section-divider hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06) 20%, rgba(0,0,0,0.06) 80%, transparent); }
+        .bg-cream { background: #fefcf8; color: #3d2c1e; } .bg-cream .section-label { color: #d4956a; } .bg-cream h2 { color: #2d1a0e; } .bg-cream .section-desc { color: #7a5c3e; }
+        .bg-mint { background: linear-gradient(170deg, #f0faf5 0%, #e8f5ef 100%); color: #1a3a2a; } .bg-mint .section-label { color: #2d8a5e; } .bg-mint h2 { color: #0e2a1a; } .bg-mint .section-desc { color: #4a7a5e; }
+        .bg-lavender { background: linear-gradient(170deg, #f8f6ff 0%, #f0edff 100%); color: #2a1a3a; } .bg-lavender .section-label { color: #7c5abf; } .bg-lavender h2 { color: #1a0a2e; } .bg-lavender .section-desc { color: #5a4a7a; }
+        .bg-white-sec { background: #ffffff; color: #1a1a2e; } .bg-white-sec .section-label { color: #6366f1; } .bg-white-sec .section-desc { color: #555; }
+        .bg-dark { background: #0f0c29; color: #fff; } .bg-dark .section-label { color: #a78bfa; } .bg-dark h2 { color: #fff; } .bg-dark .section-desc { color: #a5b4fc; }
+        .bento { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .bento-card { border-radius: 24px; padding: 36px; position: relative; overflow: hidden; transition: all 0.5s cubic-bezier(0.16,1,0.3,1); cursor: default; }
+        .bento-card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 30px 70px rgba(0,0,0,0.15); }
+        .bento-2col { grid-column: span 2; } .bento-2row { grid-row: span 2; }
+        .bento-card h3 { font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+        .bento-card p { font-size: 0.9rem; margin-bottom: 16px; opacity: 0.85; }
+        .bento-card .btn { padding: 10px 22px; font-size: 0.85rem; display: inline-block; text-decoration: none; }
+        .card-blue { background: linear-gradient(145deg, #eef4ff, #dce8fc); color: #1a2a4a; } .card-blue h3 { color: #1e40af; } .card-blue p { color: #3a5a8a; } .card-blue .btn { background: #1e40af; color: #fff; }
+        .card-green { background: linear-gradient(145deg, #edfaf3, #d8f5e6); color: #1a3a2a; } .card-green h3 { color: #166534; } .card-green p { color: #3a6a4a; } .card-green .btn { background: #166534; color: #fff; }
+        .card-peach { background: linear-gradient(145deg, #fff6f0, #ffe8da); color: #3a1a0a; } .card-peach h3 { color: #c2410c; } .card-peach p { color: #7a3a1e; } .card-peach .btn { background: #c2410c; color: #fff; }
+        .card-purple { background: linear-gradient(145deg, #f8f6ff, #ede4ff); color: #2a1a3a; } .card-purple h3 { color: #6d28d9; } .card-purple p { color: #5a3a7a; } .card-purple .btn { background: #6d28d9; color: #fff; }
+        .stat-strip { display: flex; gap: 60px; justify-content: center; flex-wrap: wrap; max-width: 800px; margin: 0 auto; padding: 60px 40px; }
+        .stat-item { text-align: center; } .stat-number { font-family: 'Outfit', sans-serif; font-size: 3.5rem; font-weight: 900; } .stat-label { font-size: 0.9rem; font-weight: 600; margin-top: 4px; }
+        .step-card { background: #fff; border: 1px solid #eee; border-radius: 20px; padding: 32px; width: 260px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: all 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .step-card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+        .step-card .step-icon { font-size: 3rem; margin-bottom: 12px; transition: transform 0.3s; }
+        .step-card:hover .step-icon { transform: scale(1.15) rotate(-5deg); }
+        .step-card h3 { font-family: 'Outfit',sans-serif; font-size: 1.2rem; color: #1a1a2e; } .step-card p { color: #555; font-size: 0.9rem; }
+        .testimonial-card { background: #fff; border-radius: 18px; padding: 24px; width: 270px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: all 0.3s; }
+        .testimonial-card:hover { transform: translateY(-6px) rotate(1deg); box-shadow: 0 16px 50px rgba(0,0,0,0.1); }
+        .testimonial-card .quote { color: #555; font-style: italic; font-size: 0.9rem; } .testimonial-card .name { color: #1a0a2e; font-weight: 700; margin-top: 12px; }
+        footer { background: #0f0c29; color: #a5b4fc; padding: 40px; text-align: center; position: relative; }
+        footer p { font-size: 0.8rem; } footer a { color: #c8d6ff; text-decoration: none; font-weight: 500; }
+        footer .footer-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+        .reveal { opacity: 0; transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+        .reveal.fade-up { transform: translateY(40px); }
+        .reveal.fade-left { transform: translateX(-40px); }
+        .reveal.fade-right { transform: translateX(40px); }
+        .reveal.scale-in { transform: scale(0.9); }
+        .reveal.visible { opacity: 1; transform: translate(0,0) scale(1); }
+        @media (max-width: 768px) {
+            nav { gap: 2px; padding: 4px; } nav a { font-size: 0.65rem; padding: 6px 10px; }
+            .hero { padding: 100px 20px 60px; min-height: auto; } .hero h1 { font-size: 2.4rem; }
+            section { padding: 60px 20px; }
+            .bento { grid-template-columns: 1fr; } .bento-2col, .bento-2row { grid-column: span 1; grid-row: span 1; }
+            .stat-strip { gap: 24px; } .stat-number { font-size: 2.2rem; }
+            .step-card { width: 100%; } .testimonial-card { width: 100%; }
+            .login-card { padding: 28px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="particles-container" id="particles"></div>
+
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div id="registerPanel">
+                <h2>Create Account</h2>
+                <p class="subtitle">Start your upgrade journey.</p>
+                <input type="text" id="regUsername" placeholder="Username">
+                <input type="email" id="regEmail" placeholder="Email">
+                <input type="password" id="regPassword" placeholder="Password">
+                <button class="btn btn-primary" id="registerBtn">Create Account →</button>
+                <p class="message" id="regMessage"></p>
+                <p class="switch">Already have an account? <a id="showLogin">Login</a></p>
+                <p class="skip" id="skipLogin">Continue without account →</p>
+            </div>
+            <div id="loginPanel" style="display:none;">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Log in to continue your upgrade.</p>
+                <input type="text" id="loginUsername" placeholder="Username">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <button class="btn btn-primary" id="loginBtn">Login →</button>
+                <p class="message" id="loginMessage"></p>
+                <p class="switch">Don't have an account? <a id="showRegister">Register</a></p>
+                <p class="switch"><a id="showReset">Forgot password?</a></p>
+            </div>
+            <div id="resetPanel" style="display:none;">
+                <h2>Reset Password</h2>
+                <p class="subtitle">We'll send you a new one.</p>
+                <input type="email" id="resetEmail" placeholder="Your email">
+                <button class="btn btn-primary" id="resetBtn">Send Reset Email</button>
+                <p class="message" id="resetMessage"></p>
+                <p class="switch"><a id="showLoginFromReset">Back to Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-container" id="navbar">
+        <nav>
+            <a href="home.html" class="active">Home</a>
+            <a href="upgrade_log.html">Upgrade Log</a>
+            <a href="study_planner.html">Study Planner</a>
+            <a href="stories.html">Read & Upgrade</a>
+            <a href="library.html">Library</a>
+            <a href="resources.html">Resources</a>
+            <a href="book-summaries.html">Book Summaries</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </div>
+
+    <section class="hero" id="heroSection">
+        <div class="hero-bg-layer" id="heroBg"></div>
+        <div class="hero-floating-shapes">
+            <div class="hero-shape"></div>
+            <div class="hero-shape"></div>
+            <div class="hero-shape"></div>
+        </div>
+        <div class="hero-inner">
+            <div class="hero-badge"><span class="pulse-dot"></span> Built by a Grade 11 Student</div>
+            <h1>The Student<br><span class="gradient-text">Upgrade</span></h1>
+            <p>Not just another study app. A complete platform for students who want to track, plan, read, and grow.</p>
+            <div class="btn-group">
+                <a href="upgrade_log.html" class="btn btn-light">Start Upgrading →</a>
+                <a href="stories.html" class="btn btn-outline">Read Stories</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="bg-cream">
+        <div class="stat-strip reveal fade-up">
+            <div class="stat-item"><div class="stat-number" data-target="3">0</div><div class="stat-label">Integrated Tools</div></div>
+            <div class="stat-item"><div class="stat-number" data-target="2">0</div><div class="stat-label">Story Series</div></div>
+            <div class="stat-item"><div class="stat-number" data-target="999">0</div><div class="stat-label">Free Forever</div></div>
+        </div>
+    </div>
+
+    <section class="bg-mint">
+        <div class="section-label reveal fade-up">Platform</div><h2 class="reveal fade-up">Everything you need.<br>Nothing you don't.</h2><p class="section-desc reveal fade-up" style="margin-bottom:50px;">Three tools. One platform. Zero distractions.</p>
+        <div class="bento">
+            <div class="bento-card bento-2col bento-2row card-blue reveal scale-in"><h3>⬆️ Upgrade Log</h3><p>The anti-checkbox. Daily reflection with feeling tracking (1-5). Weekly chart. Streak celebrations.</p><p style="font-weight:600;">📊 Visual charts · 📅 Auto tables · 🔍 Weekly review</p><a href="upgrade_log.html" class="btn" style="margin-top:12px;">Open Log →</a></div>
+            <div class="bento-card card-green reveal fade-left"><h3>📖 Study Planner</h3><p>Spaced repetition built on science. Add once, review at Day 1, 3, 7, 14, 30.</p><a href="study_planner.html" class="btn">Plan Studies →</a></div>
+            <div class="bento-card card-peach reveal fade-right"><h3>📚 Read & Upgrade</h3><p>Master English through original stories with cliffhangers and reflection prompts.</p><a href="stories.html" class="btn">Start Reading →</a></div>
+            <div class="bento-card bento-2col card-purple reveal fade-up" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><h3>🛠️ Resources & Library</h3><p>Curated tools + exam sheets + book summaries — all free, all for students.</p><div style="display:flex;gap:10px;flex-wrap:wrap;"><a href="library.html" class="btn">Library →</a><a href="resources.html" class="btn">Resources →</a><a href="book-summaries.html" class="btn">Summaries →</a></div></div></div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <section class="bg-white-sec">
+        <div class="section-label reveal fade-up">How It Works</div><h2 class="reveal fade-up">Three steps.<br>One upgrade.</h2><p class="section-desc reveal fade-up" style="margin-bottom:50px;">Everything on this platform follows a simple, powerful loop.</p>
+        <div style="display:flex; gap:30px; flex-wrap:wrap; justify-content:center; max-width:900px; margin:0 auto;">
+            <div class="step-card reveal fade-up"><div class="step-icon">📝</div><h3>1. Track</h3><p>Log your daily upgrades with feeling scores and weekly charts.</p></div>
+            <div class="step-card reveal fade-up" style="animation-delay:0.1s"><div class="step-icon">📖</div><h3>2. Plan</h3><p>Spaced repetition schedules reviews at the perfect time.</p></div>
+            <div class="step-card reveal fade-up" style="animation-delay:0.2s"><div class="step-icon">📚</div><h3>3. Improve</h3><p>Read stories. Download resources. Your English and grades grow.</p></div>
+        </div>
+    </section>
+
+    <div class="section-divider"><hr></div>
+
+    <section class="bg-lavender"><div class="section-label reveal fade-up">What Students Say</div><h2 class="reveal fade-up">Trusted by learners<br>like you.</h2><p class="section-desc reveal fade-up" style="margin-bottom:40px;">Real feedback from students using the platform.</p><div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; max-width:900px; margin:0 auto;"><div class="testimonial-card reveal fade-left"><p class="quote">"The Upgrade Log actually made me think about my day. My English improved in two weeks without realizing it."</p><p class="name">— A Grade 11 Student</p></div><div class="testimonial-card reveal fade-up"><p class="quote">"The Study Planner schedules everything. I just check what's due and study. Simple."</p><p class="name">— A Grade 12 Student</p></div><div class="testimonial-card reveal fade-right"><p class="quote">"The stories have cliffhangers. I read three chapters in one sitting."</p><p class="name">— A University Student</p></div></div></section>
+
+    <div class="section-divider"><hr></div>
+
+    <section class="bg-white-sec"><div class="section-label reveal fade-up">The Builder</div><h2 class="reveal fade-up">Built by a student.<br>For students.</h2><p class="section-desc reveal fade-up" style="margin-bottom:30px;">I'm Rebira, Grade 11. I stopped scrolling and started building. This platform is what happened when small daily actions compounded into something real.</p><div class="reveal scale-in"><a href="upgrade_log.html" class="btn" style="background:#6366f1;color:#fff;padding:16px 36px;border-radius:50px;text-decoration:none;font-weight:600;display:inline-block;">Join the Upgrade →</a></div></section>
+
+    <section class="bg-dark" style="text-align:center;"><div class="section-label reveal fade-up">Start Now</div><h2 class="reveal fade-up">Ready to upgrade<br>your student life?</h2><p class="section-desc reveal fade-up" style="margin:20px auto 30px;">Free. No ads. No catch. Just tools that work.</p><div class="reveal scale-in"><a href="upgrade_log.html" class="btn btn-light" style="font-size:1.1rem;padding:18px 40px;">Start Now →</a></div></section>
+
+    <footer><div class="footer-links"><a href="home.html">Home</a><a href="upgrade_log.html">Upgrade Log</a><a href="study_planner.html">Study Planner</a><a href="stories.html">Read & Upgrade</a><a href="library.html">Library</a><a href="resources.html">Resources</a><a href="book-summaries.html">Book Summaries</a><a href="contact.html">Contact</a></div><p>&copy; 2026 The Student Upgrade. Built by Rebira, a Grade 11 student, for students everywhere.</p><p style="margin-top:6px;font-size:0.75rem;">📧 Rebbirragize@gmail.com | Made with ☕ and belief that small actions compound.</p></footer>
+
+    <script>
+        (function(){
+            var container = document.getElementById('particles');
+            var colors = ['rgba(99,102,241,0.4)','rgba(168,120,250,0.35)','rgba(52,211,153,0.3)','rgba(245,158,11,0.3)'];
+            for(var i=0;i<30;i++){
+                var p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random()*100 + '%';
+                p.style.width = (Math.random()*8+3) + 'px';
+                p.style.height = p.style.width;
+                p.style.background = colors[Math.floor(Math.random()*colors.length)];
+                p.style.animationDuration = (Math.random()*20+15) + 's';
+                p.style.animationDelay = (Math.random()*15) + 's';
+                container.appendChild(p);
+            }
+        })();
+        (function(){
+            var heroBg = document.getElementById('heroBg');
+            window.addEventListener('scroll',function(){
+                var scroll = window.pageYOffset;
+                if(heroBg) heroBg.style.transform = 'translateY(' + (scroll * 0.3) + 'px)';
+            });
+        })();
+        (function(){
+            var counters = document.querySelectorAll('.stat-number[data-target]');
+            var counted = false;
+            var observer = new IntersectionObserver(function(entries){
+                entries.forEach(function(entry){
+                    if(entry.isIntersecting && !counted){
+                        counted = true;
+                        counters.forEach(function(c){
+                            var target = parseInt(c.getAttribute('data-target'));
+                            var duration = 1800;
+                            var start = 0;
+                            var startTime = null;
+                            function animate(ts){
+                                if(!startTime) startTime = ts;
+                                var progress = Math.min((ts-startTime)/duration,1);
+                                var ease = 1-Math.pow(1-progress,3);
+                                c.innerText = Math.floor(ease*target);
+                                if(progress<1) requestAnimationFrame(animate);
+                                else c.innerText = target===999?'∞':target;
+                            }
+                            requestAnimationFrame(animate);
+                        });
+                    }
+                });
+            },{threshold:0.4});
+            var strip = document.querySelector('.stat-strip');
+            if(strip) observer.observe(strip);
+        })();
+        (function(){
+            var reveals = document.querySelectorAll('.reveal');
+            var obs = new IntersectionObserver(function(entries){
+                entries.forEach(function(e,i){
+                    if(e.isIntersecting) setTimeout(function(){e.target.classList.add('visible');},i*60);
+                });
+            },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+            reveals.forEach(function(el){obs.observe(el);});
+        })();
+        (function(){
+            var overlay = document.getElementById('loginOverlay');
+            var rp = document.getElementById('registerPanel');
+            var lp = document.getElementById('loginPanel');
+            var resetp = document.getElementById('resetPanel');
+            if(localStorage.getItem('loggedIn')==='true'){overlay.classList.add('hidden');}
+            document.getElementById('showLogin').addEventListener('click',function(e){e.preventDefault();rp.style.display='none';lp.style.display='block';resetp.style.display='none';});
+            document.getElementById('showRegister').addEventListener('click',function(e){e.preventDefault();lp.style.display='none';rp.style.display='block';resetp.style.display='none';});
+            document.getElementById('showReset').addEventListener('click',function(e){e.preventDefault();lp.style.display='none';rp.style.display='none';resetp.style.display='block';});
+            document.getElementById('showLoginFromReset').addEventListener('click',function(e){e.preventDefault();resetp.style.display='none';lp.style.display='block';});
+            document.getElementById('skipLogin').addEventListener('click',function(){overlay.classList.add('hidden');});
+            document.getElementById('registerBtn').addEventListener('click',function(){
+                var u=document.getElementById('regUsername').value,e=document.getElementById('regEmail').value,p=document.getElementById('regPassword').value;
+                var msg=document.getElementById('regMessage');
+                if(!u||!e||!p){msg.innerText='Please fill all fields.';msg.style.color='red';return;}
+                msg.innerText='Creating account...';msg.style.color='#888';
+                fetch('register.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'username='+encodeURIComponent(u)+'&email='+encodeURIComponent(e)+'&password='+encodeURIComponent(p)})
+                .then(function(r){return r.text();}).then(function(d){
+                    if(d==='success'){msg.innerText='Account created! You can now log in.';msg.style.color='green';rp.style.display='none';lp.style.display='block';document.getElementById('loginUsername').value=u;}
+                    else{msg.innerText=d;msg.style.color='red';}
+                }).catch(function(){msg.innerText='Connection error.';msg.style.color='red';});
+            });
+            document.getElementById('loginBtn').addEventListener('click',function(){
+                var u=document.getElementById('loginUsername').value,p=document.getElementById('loginPassword').value;
+                var msg=document.getElementById('loginMessage');
+                if(!u||!p){msg.innerText='Enter username and password.';msg.style.color='red';return;}
+                msg.innerText='Logging in...';msg.style.color='#888';
+                fetch('login.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'username='+encodeURIComponent(u)+'&password='+encodeURIComponent(p)})
+                .then(function(r){return r.text();}).then(function(d){
+                    if(d.startsWith('success')){var parts=d.split('|');localStorage.setItem('loggedIn','true');localStorage.setItem('userId',parts[1]);localStorage.setItem('username',parts[2]);overlay.classList.add('hidden');}
+                    else{msg.innerText=d;msg.style.color='red';}
+                }).catch(function(){msg.innerText='Connection error.';msg.style.color='red';});
+            });
+            document.getElementById('resetBtn').addEventListener('click',function(){
+                var e=document.getElementById('resetEmail').value,msg=document.getElementById('resetMessage');
+                if(!e){msg.innerText='Enter your email.';msg.style.color='red';return;}
+                msg.innerText='Sending...';msg.style.color='#888';
+                fetch('reset_password.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'email='+encodeURIComponent(e)})
+                .then(function(r){return r.text();}).then(function(d){msg.innerText=d.startsWith('success')?'Email sent! Check your inbox.':d;msg.style.color=d.startsWith('success')?'green':'red';});
+            });
+        })();
+        var nav = document.getElementById('navbar');
+        window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>50);});
+    </script>
+</body>
+</html>
