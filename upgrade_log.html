@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade Log | The Student Upgrade</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body {
+            font-family:'Inter',system-ui,sans-serif;
+            background: linear-gradient(180deg, #fefcf8 0%, #f8f4ed 100%);
+            color: #3d2c1e; line-height:1.7; overflow-x:hidden;
+            -webkit-font-smoothing:antialiased; min-height:100vh;
+            transition: background 0.4s, color 0.4s;
+            perspective: 1000px;
+        }
+        .nav-container {
+            position:fixed; top:0; left:0; right:0; z-index:100;
+            display:flex; justify-content:center; padding:18px;
+            transition:all 0.4s;
+        }
+        .nav-container.scrolled {
+            background:rgba(254,252,248,0.9); backdrop-filter:blur(20px);
+            box-shadow:0 1px 20px rgba(0,0,0,0.05);
+        }
+        nav {
+            display:flex; gap:4px; align-items:center;
+            background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.05);
+            border-radius:50px; padding:6px; backdrop-filter:blur(12px);
+        }
+        nav a {
+            color:#7a5c3e; text-decoration:none; font-weight:600;
+            font-size:0.8rem; padding:8px 18px; border-radius:50px;
+            transition:all 0.3s; white-space:nowrap;
+        }
+        nav a:hover { color:#2d1a0e; background:rgba(0,0,0,0.03); }
+        nav a.active { background:#2d1a0e; color:#fff; }
+        .theme-toggle {
+            background: none; border: none; cursor: pointer;
+            font-size: 1.1rem; padding: 6px 8px; border-radius: 50%;
+            transition: all 0.3s; line-height: 1; margin-left: 2px;
+        }
+        .theme-toggle:hover { background: rgba(0,0,0,0.05); }
+        .container { max-width:700px; margin:0 auto; padding:120px 24px 60px; }
+        .page-header { text-align:center; margin-bottom:40px; }
+        .page-badge {
+            display:inline-flex; align-items:center; gap:6px;
+            padding:6px 18px; border-radius:50px;
+            background:rgba(212,149,106,0.12); border:1px solid rgba(212,149,106,0.2);
+            font-size:0.75rem; color:#d4956a; font-weight:600; margin-bottom:16px;
+        }
+        h1 { font-family:'Outfit',sans-serif; font-size:2.5rem; font-weight:800; color:#2d1a0e; letter-spacing:-0.02em; }
+        .page-subtitle { color:#7a5c3e; font-size:1rem; }
+        .login-prompt {
+            background: #fff; border: 2px solid #d4956a;
+            border-radius: 20px; padding: 28px; text-align: center; margin-bottom: 20px;
+        }
+        .login-prompt h3 { font-family:'Outfit',sans-serif; color:#2d1a0e; margin-bottom:8px; }
+        .login-prompt p { color:#7a5c3e; margin-bottom:16px; }
+        .login-prompt .btn {
+            display:inline-block; padding:12px 28px; background:#d4956a;
+            color:#fff; border-radius:50px; text-decoration:none; font-weight:600;
+            transition:all 0.3s;
+        }
+        .login-prompt .btn:hover { background:#c17a4a; transform:translateY(-2px); }
+        .welcome-bar {
+            background: rgba(212,149,106,0.08); border: 1px solid rgba(212,149,106,0.15);
+            border-radius: 14px; padding: 12px 18px; margin-bottom: 16px;
+            text-align: center; font-size: 0.9rem; color: #7a5c3e;
+        }
+        .welcome-bar a { color: #d4956a; font-weight: 600; text-decoration: none; }
+        .card-3d {
+            background:#fff; border:1px solid rgba(0,0,0,0.05);
+            border-radius:24px; padding:28px; margin-bottom:16px;
+            box-shadow:0 4px 24px rgba(0,0,0,0.04);
+            transition: box-shadow 0.4s;
+            transform-style: preserve-3d;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-3d::after {
+            content: '';
+            position: absolute; inset: 0;
+            border-radius: 24px;
+            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(212,149,106,0.08) 0%, transparent 60%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .card-3d:hover::after { opacity: 1; }
+        .card-3d h2 { font-family:'Outfit',sans-serif; font-size:1.1rem; font-weight:700; color:#2d1a0e; margin-bottom:12px; }
+        label { color:#7a5c3e; font-size:0.85rem; display:block; margin-bottom:6px; font-weight:600; }
+        textarea {
+            width:100%; padding:12px; margin-bottom:10px;
+            background:#fefcf8; border:1.5px solid #e8ddcc;
+            color:#3d2c1e; border-radius:12px; font-size:0.9rem;
+            font-family:inherit; transition:border 0.3s; resize:vertical;
+        }
+        textarea:focus { outline:none; border-color:#d4956a; }
+        textarea { min-height:60px; }
+        .btn {
+            padding:11px 24px; font-weight:600; font-size:0.85rem;
+            border-radius:50px; cursor:pointer; transition:all 0.3s; border:none;
+            font-family:inherit; display:inline-flex; align-items:center; gap:6px;
+            position: relative; overflow: hidden;
+        }
+        .btn-primary { background:#d4956a; color:#fff; box-shadow:0 4px 20px rgba(212,149,106,0.25); }
+        .btn-primary:hover { background:#c17a4a; transform:translateY(-2px); box-shadow:0 8px 30px rgba(212,149,106,0.4); }
+        .btn-primary:active { transform: scale(0.96); }
+        .btn-ghost { background:transparent; color:#7a5c3e; border:1.5px solid #e8ddcc; }
+        .btn-ghost:hover { background:rgba(212,149,106,0.06); border-color:#d4956a; }
+        .btn .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transform: scale(0); animation: rippleEffect 0.6s ease-out;
+            pointer-events: none;
+        }
+        @keyframes rippleEffect { to { transform: scale(4); opacity: 0; } }
+        .feeling-select { display:flex; gap:8px; margin:8px 0 16px; flex-wrap:wrap; }
+        .feeling-option {
+            font-size:1.5rem; cursor:pointer; padding:8px 12px;
+            border:2px solid transparent; border-radius:12px; transition:all 0.2s;
+            background:#fff; min-width:44px; text-align:center;
+        }
+        .feeling-option:hover { transform: scale(1.15); }
+        .feeling-option.selected {
+            border-color:#d4956a; background:rgba(212,149,106,0.08);
+            animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .chart-container {
+            display: flex; align-items: flex-end; gap: 10px;
+            height: 120px; padding: 10px 0;
+        }
+        .chart-bar-wrap {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            gap: 6px; height: 100%; justify-content: flex-end;
+        }
+        .chart-bar {
+            width: 100%; max-width: 36px; border-radius: 8px 8px 4px 4px;
+            background: linear-gradient(180deg, #d4956a, #e8b894);
+            transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            min-height: 4px; position: relative;
+        }
+        .chart-bar.empty { background: #e8ddcc; min-height: 8px; opacity: 0.5; }
+        .chart-bar.today { background: linear-gradient(180deg, #f59e0b, #fbbf24); box-shadow: 0 0 12px rgba(245,158,11,0.3); }
+        .chart-label { font-size: 0.65rem; color: #a08060; font-weight: 600; }
+        .streak-celebration {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            font-size: 4rem; z-index: 999; pointer-events: none;
+            transition: none;
+        }
+        .streak-celebration.fire {
+            animation: celebrateFire 1.2s ease-out forwards;
+        }
+        @keyframes celebrateFire {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            40% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+        .log-entry {
+            background:#fefcf8; border-left:3px solid #d4956a;
+            padding:14px 16px; margin-bottom:8px; border-radius:0 12px 12px 0;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .log-entry .date { color:#a08060; font-size:0.75rem; }
+        .log-entry .action { margin:3px 0; color:#3d2c1e; }
+        .log-entry .learned { color:#d4956a; font-style:italic; margin-top:4px; font-size:0.9rem; }
+        .schedule-table { width:100%; border-collapse:collapse; margin-top:10px; border-radius:12px; overflow:hidden; }
+        .schedule-table th, .schedule-table td { padding:10px; border:1px solid #e8ddcc; text-align:left; font-size:0.8rem; }
+        .schedule-table th { background:rgba(212,149,106,0.1); color:#d4956a; font-weight:600; }
+        .schedule-table td { background:#fefcf8; }
+        .hidden { display:none; }
+        footer {
+            border-top:1px solid #e8ddcc; padding:32px 24px; text-align:center;
+            background:#f8f4ed;
+        }
+        footer p { color:#a08060; font-size:0.8rem; }
+        footer a { color:#d4956a; text-decoration:none; font-weight:500; }
+        footer .footer-links { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:12px; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        body.dark { background: #0d1117 !important; color: #e6edf3 !important; }
+        body.dark .card-3d, body.dark .login-prompt { background: #161b22 !important; border-color: rgba(255,255,255,0.05) !important; box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important; }
+        body.dark .card-3d::after { background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(88,166,255,0.1) 0%, transparent 60%); }
+        body.dark .login-prompt { border-color: #58a6ff !important; }
+        body.dark h1, body.dark h2, body.dark .card-3d h2, body.dark .login-prompt h3 { color: #e6edf3 !important; }
+        body.dark .page-subtitle, body.dark p, body.dark label, body.dark .welcome-bar { color: #8b949e !important; }
+        body.dark textarea { background: #0d1117 !important; border-color: rgba(255,255,255,0.08) !important; color: #e6edf3 !important; }
+        body.dark textarea:focus { border-color: rgba(88,166,255,0.4) !important; }
+        body.dark nav { background: rgba(22,27,34,0.7) !important; border-color: rgba(255,255,255,0.06) !important; }
+        body.dark nav a { color: #8b949e !important; }
+        body.dark nav a:hover { color: #e6edf3 !important; background: rgba(255,255,255,0.04) !important; }
+        body.dark nav a.active { background: #58a6ff !important; color: #fff !important; }
+        body.dark .nav-container.scrolled { background: rgba(13,17,23,0.9) !important; }
+        body.dark .btn-primary { background: #58a6ff !important; color: #fff !important; }
+        body.dark .btn-primary:hover { background: #79b8ff !important; }
+        body.dark .btn-ghost { color: #e6edf3 !important; border-color: rgba(255,255,255,0.1) !important; }
+        body.dark .page-badge { background: rgba(88,166,255,0.08) !important; border-color: rgba(88,166,255,0.15) !important; color: #58a6ff !important; }
+        body.dark .login-prompt .btn { background: #58a6ff !important; }
+        body.dark .welcome-bar { background: rgba(88,166,255,0.06) !important; border-color: rgba(88,166,255,0.12) !important; }
+        body.dark .welcome-bar a { color: #58a6ff !important; }
+        body.dark .feeling-option { background: #161b22 !important; }
+        body.dark .feeling-option.selected { border-color: #58a6ff !important; background: rgba(88,166,255,0.08) !important; }
+        body.dark .log-entry { background: #161b22 !important; border-left-color: #58a6ff !important; }
+        body.dark .log-entry .date { color: #8b949e !important; }
+        body.dark .log-entry .action { color: #e6edf3 !important; }
+        body.dark .log-entry .learned { color: #58a6ff !important; }
+        body.dark .schedule-table th { background: rgba(88,166,255,0.08) !important; color: #58a6ff !important; border-color: rgba(255,255,255,0.05) !important; }
+        body.dark .schedule-table td { background: #0d1117 !important; border-color: rgba(255,255,255,0.05) !important; }
+        body.dark .chart-bar { background: linear-gradient(180deg, #58a6ff, #79b8ff) !important; }
+        body.dark .chart-bar.empty { background: rgba(255,255,255,0.06) !important; }
+        body.dark .chart-bar.today { background: linear-gradient(180deg, #f59e0b, #fbbf24) !important; }
+        body.dark .chart-label { color: #8b949e !important; }
+        body.dark footer { background: #0d1117 !important; border-top-color: rgba(255,255,255,0.05) !important; }
+        body.dark footer p { color: #8b949e !important; }
+        body.dark footer a { color: #58a6ff !important; }
+        body.dark .theme-toggle:hover { background: rgba(255,255,255,0.08); }
+        @media (max-width:500px) {
+            nav { gap:2px; padding:4px; } nav a { font-size:0.62rem; padding:5px 9px; }
+            .container { padding:100px 14px 40px; } h1 { font-size:1.8rem; }
+            .card-3d, .login-prompt { padding:18px; border-radius:18px; }
+            .btn { width:100%; justify-content:center; padding:12px; }
+            .schedule-table { display:block; overflow-x:auto; white-space:nowrap; }
+            .feeling-option { font-size:1.3rem; padding:6px 8px; }
+            textarea { font-size:0.85rem; padding:10px; }
+            .chart-container { height: 80px; gap: 6px; }
+            .chart-bar { max-width: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container" id="navbar">
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="upgrade_log.html" class="active">Upgrade Log</a>
+            <a href="study_planner.html">Study Planner</a>
+            <a href="stories.html">Read & Upgrade</a>
+            <a href="library.html">Library</a>
+            <a href="resources.html">Resources</a>
+            <a href="book-summaries.html">Book Summaries</a>
+            <a href="contact.html">Contact</a>
+            <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button>
+        </nav>
+    </div>
+    <div class="container">
+        <div class="page-header">
+            <div class="page-badge">⬆️ Daily Practice</div>
+            <h1>Upgrade Log</h1>
+            <p class="page-subtitle">Not just what you did. Who you became.</p>
+        </div>
+        <div class="login-prompt" id="loginPrompt">
+            <h3>🔐 Login Required</h3>
+            <p>Please log in from the homepage to access your Upgrade Log.</p>
+            <a href="home.html" class="btn">Go to Login →</a>
+        </div>
+        <div class="welcome-bar hidden" id="welcomeBar">
+            ✅ Logged in as <strong id="displayName"></strong>. <a href="#" id="logoutBtn">Logout</a>
+        </div>
+        <div id="toolContent" class="hidden">
+            <div class="card-3d" id="chartCard">
+                <h2>📊 This Week's Feeling</h2>
+                <div class="chart-container" id="weeklyChart">
+                    <p style="color:#a08060;">Log your first entry to see the chart.</p>
+                </div>
+            </div>
+            <div class="card-3d" id="logCard">
+                <h2>Today's Log — <span id="todayDate"></span></h2>
+                <label>What did you do today to upgrade yourself?</label>
+                <textarea id="actionText" placeholder="E.g., Studied Biology for 2 hours using spaced repetition..."></textarea>
+                <label>How did it feel?</label>
+                <div class="feeling-select" id="feelingSelect">
+                    <span class="feeling-option" data-value="1" title="Terrible">😫</span>
+                    <span class="feeling-option" data-value="2" title="Bad">😞</span>
+                    <span class="feeling-option" data-value="3" title="Okay">😐</span>
+                    <span class="feeling-option" data-value="4" title="Good">😊</span>
+                    <span class="feeling-option" data-value="5" title="Amazing">🔥</span>
+                </div>
+                <label>What's one thing you learned?</label>
+                <textarea id="learnedText" placeholder="E.g., Teaching someone else is the fastest way to master a concept..."></textarea>
+                <button class="btn btn-primary" id="saveLogBtn">Save Today's Log</button>
+                <p id="logMessage" style="margin-top:10px;color:#d4956a;font-size:0.85rem;"></p>
+            </div>
+            <div class="card-3d">
+                <h2>📅 Weekly Schedule</h2>
+                <p style="color:#a08060;font-size:0.8rem;margin-bottom:8px;">Write your week. "Monday 4-6pm Math, Tuesday 5-7pm Physics..."</p>
+                <textarea id="scheduleText" placeholder="Write your weekly schedule..." style="min-height:70px;"></textarea>
+                <button class="btn btn-ghost" id="parseScheduleBtn">Generate Table</button>
+                <div id="scheduleTableDiv" style="margin-top:12px;"></div>
+            </div>
+            <div class="card-3d">
+                <h2>📝 This Week's Entries</h2>
+                <div id="weeklyLogs"><p style="color:#a08060;">No entries yet.</p></div>
+            </div>
+            <div class="card-3d">
+                <h2>🔍 Weekly Review</h2>
+                <label>What upgraded you the most?</label>
+                <textarea id="weeklyUpgrade" placeholder="The biggest growth moment..."></textarea>
+                <label>What drained you?</label>
+                <textarea id="weeklyDrain" placeholder="Something that held you back..."></textarea>
+                <label>Your ONE focus for next week?</label>
+                <textarea id="weeklyFocus" placeholder="One thing you'll prioritize..."></textarea>
+                <button class="btn btn-primary" id="saveReviewBtn">Save Weekly Review</button>
+                <p id="reviewMessage" style="margin-top:10px;color:#d4956a;font-size:0.85rem;"></p>
+            </div>
+        </div>
+    </div>
+    <div class="streak-celebration" id="streakCelebration">🔥</div>
+    <footer>
+        <div class="footer-links">
+            <a href="home.html">Home</a><a href="upgrade_log.html">Upgrade Log</a><a href="study_planner.html">Study Planner</a>
+            <a href="stories.html">Read & Upgrade</a><a href="library.html">Library</a><a href="resources.html">Resources</a>
+            <a href="book-summaries.html">Book Summaries</a><a href="contact.html">Contact</a>
+        </div>
+        <p>&copy; 2026 The Student Upgrade. Built by Rebira, a Grade 11 student, for students everywhere.</p>
+        <p style="margin-top:6px; font-size:0.75rem;">📧 Rebbirragize@gmail.com | Made with ☕ and belief that small actions compound.</p>
+    </footer>
+    <script>
+        (function(){
+            var loginPrompt = document.getElementById('loginPrompt');
+            var welcomeBar = document.getElementById('welcomeBar');
+            var toolContent = document.getElementById('toolContent');
+            var displayName = document.getElementById('displayName');
+            var prevStreak = parseInt(localStorage.getItem('prevStreak') || '0');
+            function checkLogin(){
+                if(localStorage.getItem('loggedIn') === 'true'){
+                    loginPrompt.classList.add('hidden');
+                    welcomeBar.classList.remove('hidden');
+                    toolContent.classList.remove('hidden');
+                    displayName.innerText = localStorage.getItem('username') || 'User';
+                    initTool();
+                } else {
+                    loginPrompt.classList.remove('hidden');
+                    welcomeBar.classList.add('hidden');
+                    toolContent.classList.add('hidden');
+                }
+            }
+            document.getElementById('logoutBtn').addEventListener('click', function(e){
+                e.preventDefault();
+                localStorage.removeItem('loggedIn'); localStorage.removeItem('userId'); localStorage.removeItem('username');
+                checkLogin();
+            });
+            document.querySelectorAll('.card-3d').forEach(function(card){
+                card.addEventListener('mousemove', function(e){
+                    var rect = card.getBoundingClientRect();
+                    var x = e.clientX - rect.left;
+                    var y = e.clientY - rect.top;
+                    var centerX = rect.width / 2;
+                    var centerY = rect.height / 2;
+                    var rotateX = (y - centerY) / centerY * -6;
+                    var rotateY = (x - centerX) / centerX * 6;
+                    card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
+                    card.style.setProperty('--mx', (x / rect.width * 100) + '%');
+                    card.style.setProperty('--my', (y / rect.height * 100) + '%');
+                });
+                card.addEventListener('mouseleave', function(){
+                    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+                });
+            });
+            document.querySelectorAll('.btn').forEach(function(btn){
+                btn.addEventListener('click', function(e){
+                    var ripple = document.createElement('span');
+                    ripple.className = 'ripple';
+                    var rect = btn.getBoundingClientRect();
+                    ripple.style.left = (e.clientX - rect.left - 10) + 'px';
+                    ripple.style.top = (e.clientY - rect.top - 10) + 'px';
+                    ripple.style.width = '20px'; ripple.style.height = '20px';
+                    btn.appendChild(ripple);
+                    setTimeout(function(){ ripple.remove(); }, 600);
+                });
+            });
+            function initTool(){
+                document.getElementById("todayDate").innerText = new Date().toDateString();
+                var today = new Date().toISOString().split('T')[0];
+                var weekNumber = getWeekNumber(new Date());
+                var selectedFeeling = 3;
+                document.querySelectorAll(".feeling-option").forEach(function(el){
+                    el.addEventListener("click", function(){
+                        document.querySelectorAll(".feeling-option").forEach(function(e){ e.classList.remove("selected"); });
+                        this.classList.add("selected");
+                        selectedFeeling = parseInt(this.dataset.value);
+                    });
+                });
+                var defaultFeeling = document.querySelector(".feeling-option[data-value='3']");
+                if(defaultFeeling) defaultFeeling.classList.add("selected");
+                function getWeekNumber(d){
+                    var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+                    date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+                    var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+                    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+                }
+                function celebrateStreak(){
+                    var currentStreak = parseInt(localStorage.getItem('streak') || '0');
+                    if(currentStreak > prevStreak && currentStreak > 0){
+                        var el = document.getElementById('streakCelebration');
+                        el.classList.remove('fire');
+                        void el.offsetWidth;
+                        el.classList.add('fire');
+                        prevStreak = currentStreak;
+                        localStorage.setItem('prevStreak', currentStreak);
+                    }
+                }
+                document.getElementById("saveLogBtn").addEventListener("click", function(){
+                    var a = document.getElementById("actionText").value;
+                    if(!a){ document.getElementById("logMessage").innerText = "Please describe what you did."; return; }
+                    var body = "userId=" + (localStorage.getItem("userId")||0) + "&date=" + today + "&action=" + encodeURIComponent(a) + "&feeling=" + selectedFeeling + "&learned=" + encodeURIComponent(document.getElementById("learnedText").value) + "&schedule=" + encodeURIComponent(document.getElementById("scheduleText").value) + "&weekNumber=" + weekNumber;
+                    if(localStorage.getItem("loggedIn") === "true"){
+                        fetch("save_log.php", { method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:body })
+                        .then(function(r){ return r.text(); }).then(function(x){
+                            document.getElementById("logMessage").innerText = "✅ Saved! You're upgrading.";
+                            loadWeekLogs(); updateChart(); celebrateStreak();
+                        });
+                    } else {
+                        var logs = JSON.parse(localStorage.getItem("upgradeLogs") || "[]");
+                        var ex = logs.findIndex(function(l){ return l.date === today; });
+                        var entry = { date:today, action:a, feeling:selectedFeeling, learned:document.getElementById("learnedText").value, schedule:document.getElementById("scheduleText").value, weekNumber:weekNumber };
+                        if(ex >= 0) logs[ex] = entry; else logs.push(entry);
+                        localStorage.setItem("upgradeLogs", JSON.stringify(logs));
+                        document.getElementById("logMessage").innerText = "✅ Saved locally.";
+                        loadWeekLogs(); updateChart(); celebrateStreak();
+                    }
+                });
+                document.getElementById("parseScheduleBtn").addEventListener("click", function(){
+                    var t = document.getElementById("scheduleText").value.trim();
+                    if(!t) return;
+                    var lines = t.split(/[.,\n]+/).filter(function(l){ return l.trim(); });
+                    var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+                    var table = '<table class="schedule-table"><tr><th>Day</th><th>Time</th><th>Activity</th></tr>';
+                    var found = {};
+                    lines.forEach(function(l){
+                        var dm = days.find(function(d){ return l.toLowerCase().includes(d.toLowerCase()); });
+                        var tm = l.match(/(\d{1,2}(:\d{2})?\s*(am|pm)?\s*-\s*\d{1,2}(:\d{2})?\s*(am|pm)?)/i);
+                        var day = dm || "Unscheduled";
+                        var time = tm ? tm[0] : "Flexible";
+                        var act = l.replace(day,"").replace(time,"").replace(/[-–—]/g,"").trim() || l.trim();
+                        if(!found[day]) found[day] = [];
+                        found[day].push({ time:time, act:act });
+                    });
+                    days.forEach(function(d){
+                        if(found[d]) found[d].forEach(function(e, i){
+                            table += '<tr><td>' + (i===0 ? d : "") + '</td><td>' + e.time + '</td><td>' + e.act + '</td></tr>';
+                        });
+                    });
+                    table += '</table>';
+                    document.getElementById("scheduleTableDiv").innerHTML = table;
+                });
+                function loadWeekLogs(){
+                    var c = document.getElementById("weeklyLogs");
+                    if(localStorage.getItem("loggedIn") === "true"){
+                        fetch("get_log.php", { method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:"userId=" + localStorage.getItem("userId") + "&weekNumber=" + weekNumber })
+                        .then(function(r){ return r.json(); }).then(function(d){
+                            if(d.logs.length === 0){
+                                c.innerHTML = '<p style="color:#a08060;">No entries yet this week.</p>';
+                            } else {
+                                c.innerHTML = d.logs.map(function(l){
+                                    return '<div class="log-entry"><div class="date">' + l.log_date + '</div><div class="action">📝 ' + l.action_text + '</div><div>' + ["","😫","😕","😐","😊","🔥"][l.feeling] + ' ' + l.feeling + '/5</div>' + (l.learned ? '<div class="learned">💡 ' + l.learned + '</div>' : '') + '</div>';
+                                }).join("");
+                            }
+                            if(d.schedule) document.getElementById("scheduleText").value = d.schedule;
+                            updateChart();
+                        });
+                    } else {
+                        var logs = JSON.parse(localStorage.getItem("upgradeLogs") || "[]");
+                        var wl = logs.filter(function(l){ return l.weekNumber === weekNumber; });
+                        if(wl.length === 0){
+                            c.innerHTML = '<p style="color:#a08060;">No entries yet this week.</p>';
+                        } else {
+                            c.innerHTML = wl.map(function(l){
+                                return '<div class="log-entry"><div class="date">' + l.date + '</div><div class="action">📝 ' + l.action + '</div><div>' + ["","😫","😕","😐","😊","🔥"][l.feeling] + ' ' + l.feeling + '/5</div>' + (l.learned ? '<div class="learned">💡 ' + l.learned + '</div>' : '') + '</div>';
+                            }).join("");
+                        }
+                        updateChart();
+                    }
+                }
+                function updateChart(){
+                    var dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+                    var todayDay = new Date().getDay();
+                    var mondayIndex = (todayDay === 0) ? -6 : 1 - todayDay;
+                    var feelingByDay = {};
+                    if(localStorage.getItem("loggedIn") === "true"){
+                        fetch("get_log.php", { method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:"userId=" + localStorage.getItem("userId") + "&weekNumber=" + weekNumber })
+                        .then(function(r){ return r.json(); })
+                        .then(function(d){
+                            d.logs.forEach(function(l){
+                                var dayIdx = new Date(l.log_date).getDay();
+                                feelingByDay[dayIdx] = l.feeling;
+                            });
+                            renderChart(feelingByDay, dayNames, mondayIndex, todayDay);
+                        });
+                    } else {
+                        var logs = JSON.parse(localStorage.getItem("upgradeLogs") || "[]");
+                        logs.forEach(function(l){
+                            if(l.weekNumber === weekNumber){
+                                var dayIdx = new Date(l.date).getDay();
+                                feelingByDay[dayIdx] = l.feeling;
+                            }
+                        });
+                        renderChart(feelingByDay, dayNames, mondayIndex, todayDay);
+                    }
+                }
+                function renderChart(feelingByDay, dayNames, mondayIndex, todayDay){
+                    var chartContainer = document.getElementById('weeklyChart');
+                    var html = '';
+                    var hasData = Object.values(feelingByDay).some(function(v){ return v > 0; });
+                    if(!hasData){
+                        chartContainer.innerHTML = '<p style="color:#a08060; text-align:center; width:100%;">Log your first entry to see your weekly feeling chart! 📊</p>';
+                        return;
+                    }
+                    for(var i = 0; i < 7; i++){
+                        var dayIdx = (mondayIndex + i + 7) % 7;
+                        if(dayIdx === 0) dayIdx = 7;
+                        var d = new Date();
+                        d.setDate(d.getDate() + (i + mondayIndex));
+                        var dateStr = d.toISOString().split('T')[0];
+                        var feeling = feelingByDay[dayIdx === 7 ? 0 : dayIdx] || 0;
+                        var height = feeling * 20;
+                        var isToday = (dateStr === new Date().toISOString().split('T')[0]);
+                        var barClass = 'chart-bar';
+                        if(feeling === 0) barClass += ' empty';
+                        if(isToday) barClass += ' today';
+                        html += '<div class="chart-bar-wrap">';
+                        html += '<div class="' + barClass + '" style="height:' + (height || 4) + 'px;" title="' + dayNames[i] + ': ' + (feeling || 'No data') + '/5"></div>';
+                        html += '<span class="chart-label">' + dayNames[i] + '</span>';
+                        html += '</div>';
+                    }
+                    chartContainer.innerHTML = html;
+                }
+                document.getElementById("saveReviewBtn").addEventListener("click", function(){
+                    var body = "userId=" + localStorage.getItem("userId") + "&weekNumber=" + weekNumber + "&upgrade=" + encodeURIComponent(document.getElementById("weeklyUpgrade").value) + "&drain=" + encodeURIComponent(document.getElementById("weeklyDrain").value) + "&focus=" + encodeURIComponent(document.getElementById("weeklyFocus").value);
+                    if(localStorage.getItem("loggedIn") === "true"){
+                        fetch("save_weekly.php", { method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:body })
+                        .then(function(r){ return r.text(); }).then(function(x){
+                            document.getElementById("reviewMessage").innerText = "✅ Review saved!";
+                        });
+                    } else {
+                        document.getElementById("reviewMessage").innerText = "✅ Saved locally.";
+                    }
+                });
+                loadWeekLogs();
+            }
+            checkLogin();
+            window.addEventListener("scroll", function(){
+                document.getElementById("navbar").classList.toggle("scrolled", window.scrollY > 50);
+            });
+            var toggle = document.getElementById('themeToggle');
+            var body = document.body;
+            if(localStorage.getItem('theme') === 'dark'){ body.classList.add('dark'); toggle.textContent = '☀️'; }
+            toggle.addEventListener('click', function(){
+                body.classList.toggle('dark');
+                if(body.classList.contains('dark')){ localStorage.setItem('theme','dark'); toggle.textContent = '☀️'; }
+                else { localStorage.setItem('theme','light'); toggle.textContent = '🌙'; }
+            });
+        })();
+    </script>
+</body>
+</html>
