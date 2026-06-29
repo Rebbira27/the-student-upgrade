@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit a Story | The Student Upgrade</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',system-ui,sans-serif; background:#f5f0e8; color:#2d1a0e; line-height:1.7; min-height:100vh; }
+        .nav-container { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:center;padding:14px;background:rgba(245,240,232,0.95);backdrop-filter:blur(16px);box-shadow:0 1px 20px rgba(0,0,0,0.06); }
+        nav { display:flex;gap:4px;align-items:center;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.05);border-radius:50px;padding:6px;backdrop-filter:blur(12px); }
+        nav a { color:#5c3d2e;text-decoration:none;font-weight:600;font-size:0.8rem;padding:8px 18px;border-radius:50px;transition:all 0.3s;white-space:nowrap; }
+        nav a:hover { color:#1a0a02;background:rgba(0,0,0,0.03); } nav a.active { background:#5c3d2e;color:#fff; }
+        .container { max-width:650px;margin:0 auto;padding:100px 20px 60px; }
+        h1 { font-family:'Outfit',sans-serif;font-size:2rem;color:#2d1a0e;margin-bottom:8px; }
+        .subtitle { color:#8b5e3c;margin-bottom:30px; }
+        .card { background:#fff;border:1px solid #d4c4b0;border-radius:16px;padding:28px;margin-bottom:20px; }
+        .card h2 { font-family:'Outfit',sans-serif;font-size:1.1rem;color:#2d1a0e;margin-bottom:16px; }
+        input,textarea,select { width:100%;padding:12px;margin-bottom:12px;background:#faf7f2;border:1.5px solid #d4c4b0;color:#2d1a0e;border-radius:10px;font-size:0.9rem;font-family:inherit; }
+        textarea { min-height:200px;resize:vertical; }
+        input:focus,textarea:focus,select:focus { outline:none;border-color:#8b5e3c; }
+        .btn { padding:12px 28px;font-weight:600;font-size:0.9rem;border-radius:50px;cursor:pointer;border:none;font-family:inherit;background:#8b5e3c;color:#fff;transition:all 0.3s; }
+        .btn:hover { background:#5c3d2e;transform:translateY(-2px); }
+        .message { margin-top:12px;font-size:0.9rem; }
+        .login-prompt { text-align:center;padding:30px;background:#fff;border-radius:16px;border:2px solid #8b5e3c; }
+        .login-prompt a { color:#8b5e3c;font-weight:600; }
+        footer { border-top:1px solid #d4c4b0;padding:24px;text-align:center;background:#f0ebe0;color:#8b5e3c;font-size:0.8rem; }
+        footer a { color:#5c3d2e;text-decoration:none;font-weight:500; }
+        @media (max-width:500px) { nav { gap:2px;padding:4px; } nav a { font-size:0.6rem;padding:5px 9px; } .container { padding:90px 14px 40px; } .card { padding:18px; } }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <nav>
+            <a href="home.html">Home</a><a href="upgrade_log.html">Upgrade Log</a><a href="study_planner.html">Study Planner</a>
+            <a href="stories.html">Read & Upgrade</a><a href="submit.html" class="active">Submit Story</a>
+            <a href="library.html">Library</a><a href="resources.html">Resources</a>
+            <a href="book-summaries.html">Book Summaries</a><a href="contact.html">Contact</a>
+        </nav>
+    </div>
+    <div class="container">
+        <h1>✍️ Submit Your Story</h1>
+        <p class="subtitle">Share your story with students across Ethiopia and beyond. Your name stays on it.</p>
+        <div class="login-prompt" id="loginPrompt"><p><strong>🔐 Please log in to submit a story.</strong></p><p style="margin-top:8px;"><a href="home.html">Go to Login →</a></p></div>
+        <div class="card" id="submitForm" style="display:none;">
+            <h2>Your Story</h2>
+            <input type="text" id="authorName" placeholder="Your name (as it will appear on the story)">
+            <input type="text" id="storyTitle" placeholder="Story title">
+            <select id="storyLevel"><option value="">Select difficulty level</option><option value="1">Level 1 — Beginner</option><option value="2">Level 2 — Easy</option><option value="3">Level 3 — Intermediate</option><option value="4">Level 4 — Upper Intermediate</option><option value="5">Level 5 — Advanced</option></select>
+            <textarea id="storyText" placeholder="Write your story here..."></textarea>
+            <p style="font-size:0.8rem;color:#8b5e3c;margin-bottom:12px;"><strong>Guidelines:</strong> Original work only. 300-2000 words. Stories should be appropriate for students. Your story will be reviewed before publication.</p>
+            <button class="btn" id="submitBtn">Submit Story →</button>
+            <p class="message" id="submitMessage"></p>
+        </div>
+    </div>
+    <footer><p>&copy; 2026 The Student Upgrade. Built by Rebira, a Grade 11 student, for students everywhere.</p><p style="margin-top:4px;">📧 Rebbirragize@gmail.com</p></footer>
+    <script>
+        if(localStorage.getItem('loggedIn')==='true'){document.getElementById('loginPrompt').style.display='none';document.getElementById('submitForm').style.display='block';document.getElementById('authorName').value=localStorage.getItem('username')||'';}
+        document.getElementById('submitBtn').addEventListener('click',function(){var n=document.getElementById('authorName').value,t=document.getElementById('storyTitle').value,x=document.getElementById('storyText').value,l=document.getElementById('storyLevel').value,m=document.getElementById('submitMessage');if(!t||!x){m.innerText='Title and story text are required.';m.style.color='red';return;}m.innerText='Submitting...';m.style.color='#8b5e3c';fetch('submit_story.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'userId='+localStorage.getItem('userId')+'&authorName='+encodeURIComponent(n)+'&title='+encodeURIComponent(t)+'&storyText='+encodeURIComponent(x)+'&level='+(l||3)}).then(function(r){return r.text();}).then(function(d){if(d.startsWith('success')){m.innerText='✅ Story submitted! It will be reviewed and published soon.';m.style.color='green';document.getElementById('storyTitle').value='';document.getElementById('storyText').value='';}else{m.innerText=d;m.style.color='red';}});});
+    </script>
+</body>
+</html>
